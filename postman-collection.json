@@ -1,0 +1,419 @@
+{
+  "info": {
+    "name": "Lighthouse Checkout API",
+    "description": "Shopping cart API with promotional pricing rules",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API is running"
+      }
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            },
+            "description": "List all available products with their SKUs and prices"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checkout",
+      "item": [
+        {
+          "name": "Scan Item - Google Home",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"120P90\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "scan"]
+            },
+            "description": "Add Google Home ($49.99) to cart. Buy 3, pay for 2!"
+          }
+        },
+        {
+          "name": "Scan Item - MacBook Pro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"43N23P\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "scan"]
+            },
+            "description": "Add MacBook Pro ($5,399.99) to cart. Includes free Raspberry Pi!"
+          }
+        },
+        {
+          "name": "Scan Item - Alexa Speaker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"A304SD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "scan"]
+            },
+            "description": "Add Alexa Speaker ($109.50) to cart. Buy more than 3 for 10% off!"
+          }
+        },
+        {
+          "name": "Scan Item - Raspberry Pi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"344222\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "scan"]
+            },
+            "description": "Add Raspberry Pi ($30.00) to cart"
+          }
+        },
+        {
+          "name": "View Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/checkout/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "cart"]
+            },
+            "description": "View all items currently in the cart"
+          }
+        },
+        {
+          "name": "Get Total",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/checkout/total",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "total"]
+            },
+            "description": "Calculate total with all applicable discounts"
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/checkout/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["checkout", "clear"]
+            },
+            "description": "Remove all items from the cart"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Scenario 1: MacBook + Pi = $5,399.99",
+          "item": [
+            {
+              "name": "1. Clear Cart",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/clear",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "clear"]
+                }
+              }
+            },
+            {
+              "name": "2. Add MacBook Pro (auto-adds Pi)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"43N23P\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "3. Get Total (Expected: $5,399.99)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/total",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "total"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scenario 2: 3 Google Homes = $99.98",
+          "item": [
+            {
+              "name": "1. Clear Cart",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/clear",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "clear"]
+                }
+              }
+            },
+            {
+              "name": "2. Add Google Home #1",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"120P90\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "3. Add Google Home #2",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"120P90\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "4. Add Google Home #3",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"120P90\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "5. Get Total (Expected: $99.98)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/total",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "total"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scenario 3: 3 Alexa = $328.50 (no discount)",
+          "item": [
+            {
+              "name": "1. Clear Cart",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/clear",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "clear"]
+                }
+              }
+            },
+            {
+              "name": "2. Add Alexa #1",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"A304SD\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "3. Add Alexa #2",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"A304SD\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "4. Add Alexa #3",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sku\": \"A304SD\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/scan",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "scan"]
+                }
+              }
+            },
+            {
+              "name": "5. Get Total (Expected: $328.50 - NO discount)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/checkout/total",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["checkout", "total"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
