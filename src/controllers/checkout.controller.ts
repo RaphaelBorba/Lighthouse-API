@@ -11,7 +11,7 @@ const router = Router();
 const getCheckoutService = (req: Request): CheckoutService => {
   // Restore cart from session or create new one
   let cart: Cart;
-  console.log(req.session);
+
   if (req.session.cart) {
     // Reconstruct Cart from session data
     cart = createEmptyCart();
@@ -102,39 +102,6 @@ router.get('/total', (req: Request, res: Response) => {
   const summary = service.calculateTotal();
 
   res.json(summary);
-});
-
-/**
- * DELETE /checkout/item/:sku
- * Remove one quantity of an item from cart
- */
-router.delete('/item/:sku', (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { sku } = req.params;
-
-    const service = getCheckoutService(req);
-    const item = service.removeItem(sku);
-    saveCartToSession(req, service);
-
-    if (item) {
-      res.json({
-        message: 'Item quantity decreased',
-        item: {
-          sku: item.product.sku,
-          name: item.product.name,
-          price: item.product.price,
-          quantity: item.quantity,
-        },
-      });
-    } else {
-      res.json({
-        message: 'Item removed from cart',
-        sku,
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
 });
 
 /**

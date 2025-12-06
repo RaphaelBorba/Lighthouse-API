@@ -1,8 +1,10 @@
 import { Cart, CartItem, createEmptyCart } from '../models/cart.model';
-import { Product } from '../models/product.model';
 import { productRepository, ProductRepository } from '../repositories/product.repository';
 import { PricingRule, PricingRuleResult, defaultPricingRules } from '../rules';
 import { ApiError } from '../middleware/error-handler';
+
+const MACBOOK_SKU = '43N23P';
+const RASPBERRY_PI_SKU = '344222';
 
 export interface CartSummary {
   items: Array<{
@@ -34,9 +36,9 @@ export class CheckoutService {
   }
 
   /**
-   * Add an item to the cart by SKU
+   * Add an item to the cart by SKU (internal, no bundle logic)
    */
-  scan(sku: string): CartItem {
+  private addItemToCart(sku: string): CartItem {
     const product = this.productRepo.findBySku(sku);
 
     if (!product) {
@@ -60,22 +62,18 @@ export class CheckoutService {
   }
 
   /**
-   * Remove one quantity of an item from the cart by SKU
+   * Add an item to the cart by SKU
+   * Automatically adds free Raspberry Pi when MacBook is added
    */
-  removeItem(sku: string): CartItem | null {
-    const existingItem = this.cart.items.get(sku);
+  scan(sku: string): CartItem {
+    const item = this.addItemToCart(sku);
 
-    if (!existingItem) {
-      throw new ApiError(404, 'ITEM_NOT_IN_CART', `Item with SKU '${sku}' is not in the cart`);
+    // MacBook Bundle: Auto-add a free Raspberry Pi for each MacBook
+    if (sku === MACBOOK_SKU) {
+      this.addItemToCart(RASPBERRY_PI_SKU);
     }
 
-    if (existingItem.quantity > 1) {
-      existingItem.quantity -= 1;
-      return existingItem;
-    }
-
-    this.cart.items.delete(sku);
-    return null;
+    return item;
   }
 
   /**
