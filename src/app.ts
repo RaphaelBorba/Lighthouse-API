@@ -2,6 +2,8 @@ import express, { Application } from 'express';
 import session from 'express-session';
 import { errorHandler, notFoundHandler } from './middleware/error-handler';
 import { requestLogger } from './middleware/request-logger';
+import { productRouter } from './controllers/product.controller';
+import { checkoutRouter } from './controllers/checkout.controller';
 
 const app: Application = express();
 
@@ -28,9 +30,9 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Routes will be added here in later phases
-// app.use('/products', productRoutes);
-// app.use('/checkout', checkoutRoutes);
+// Routes
+app.use('/products', productRouter);
+app.use('/checkout', checkoutRouter);
 
 // Error handling
 app.use(notFoundHandler);
